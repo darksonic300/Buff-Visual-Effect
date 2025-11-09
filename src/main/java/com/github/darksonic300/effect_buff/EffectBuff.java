@@ -86,47 +86,56 @@ public class EffectBuff {
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null || mc.player == null) {
                 // Clear state if we leave a world
-                if (!activeEffectsTracker.isEmpty()) activeEffectsTracker.clear();
-                if (!activeVisuals.isEmpty()) activeVisuals.clear();
+                if (!activeEffectsTracker.isEmpty())
+                    activeEffectsTracker.clear();
+                if (!activeVisuals.isEmpty())
+                    activeVisuals.clear();
                 return;
             }
-
             LocalPlayer player = mc.player;
-            long currentTime = Util.getMillis();
 
+            // Use a new map to store the current tick's effects and durations
             Map<MobEffect, Integer> currentEffects = new HashMap<>();
 
-            // 1. Check for newly applied effects
+            // 1. Check for newly applied or REAPPLIED effects
             for (MobEffectInstance instance : player.getActiveEffects()) {
-                // Note: In 1.20.1, getEffect() returns the MobEffect, which is used directly.
                 MobEffect effect = instance.getEffect();
+                int currentDuration = instance.getDuration();
 
-                // Check if this effect is NEWLY APPLIED
+                // Check if the effect is NOT present in the tracker (Scenario 1: Truly New)
                 if (!activeEffectsTracker.containsKey(effect)) {
-                    // Effect found! Trigger the visual animation.
+                    triggerEffectVisual(effect);
+                }
+                // Check if the effect IS present, but the new duration is greater than the old one
+                // (Scenario 2: Reapplied/Extended)
+                // Use a small buffer (e.g., 2 ticks) to account for client-side timing.
+                else if (currentDuration > (activeEffectsTracker.get(effect) + 2)) {
                     triggerEffectVisual(effect);
                 }
 
-                // Add the current effect to the map for the next tick's comparison
-                currentEffects.put(effect, instance.getDuration());
+                // Add the current effect and its duration to the map for the next tick's comparison
+                currentEffects.put(effect, currentDuration);
             }
 
             // 2. Update the tracker for the next tick
             activeEffectsTracker.clear();
             activeEffectsTracker.putAll(currentEffects);
-
-            // 3. Remove finished visuals (Cleanup)
-            activeVisuals.removeIf(visual -> (currentTime - visual.startTime) >= ANIMATION_DURATION_MS);
         }
     }
 
     private static void triggerEffectVisual(MobEffect effect) {
-        boolean isAlreadyAnimating = activeVisuals.stream()
-                .anyMatch(visual -> visual.effect().equals(effect)
-                        && (Util.getMillis() - visual.startTime()) < ANIMATION_DURATION_MS);
+        // 1. Try to find an existing visual
+        ActiveEffectVisual existing = activeVisuals.stream()
+                .filter(visual -> visual.effect().equals(effect))
+                .findFirst()
+                .orElse(null);
 
-        if (!isAlreadyAnimating) {
-            // Add a new visual animation to the list, tracking its start time.
+        if (existing != null) {
+            // 2. If found, refresh its start time to restart the animation
+            activeVisuals.remove(existing); // Remove the old instance
+            activeVisuals.add(new ActiveEffectVisual(effect, Util.getMillis())); // Add a new one with current time
+        } else {
+            // 3. If not found, add a new one
             activeVisuals.add(new ActiveEffectVisual(effect, Util.getMillis()));
         }
     }
