@@ -6,6 +6,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,7 +18,7 @@ import org.joml.Matrix4f;
  * This class now iterates over EffectBuff.activeVisuals to render all currently playing animations.
  */
 @Mod.EventBusSubscriber(modid = EffectBuff.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = net.minecraftforge.api.distmarker.Dist.CLIENT)
-public class EffectCuboidRenderer {
+public class VisualEffectCuboidRenderer {
 
     private static final long ANIMATION_DURATION_MS = 350L;
 
@@ -65,8 +66,8 @@ public class EffectCuboidRenderer {
             float r = ((color >> 16) & 0xFF) / 255.0F;
             float g = ((color >> 8) & 0xFF) / 255.0F;
             float b = (color & 0xFF) / 255.0F;
-            // Fading transparency: start at 0.7 alpha, fade to 0.0
-            float a = 0.5F;
+
+            float a = 0.6F;
 
             // Calculate animated properties
             float baseSize = 1.15F; // Start with a smaller base size
@@ -120,32 +121,39 @@ public class EffectCuboidRenderer {
         
         float la = a - 0.4f;
 
+        // Calculate LIGHTER color for the top of the frustum (new!)
+        // We increase the base color values towards 1.0 (white) for a glow effect
+        final float LIGHTEN_FACTOR = 0.3F;
+        float r_t = Math.min(1.0F, r + LIGHTEN_FACTOR);
+        float g_t = Math.min(1.0F, g + LIGHTEN_FACTOR);
+        float b_t = Math.min(1.0F, b + LIGHTEN_FACTOR);
+
         // FRONT FACE (Z = 0)
         
         bufferBuilder.vertex(matrix, 0, 0, 0).color(r, g, b, la).endVertex();
         bufferBuilder.vertex(matrix, 1, 0, 0).color(r, g, b, la).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0.5f, 0).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, 0, 0.5f, 0).color(r, g, b, a).endVertex();
+        bufferBuilder.vertex(matrix, 1, 0.5f, 0).color(r_t, g_t, b_t, a).endVertex();
+        bufferBuilder.vertex(matrix, 0, 0.5f, 0).color(r_t, g_t, b_t, a).endVertex();
 
         // BACK FACE (Z = 1)
 
         bufferBuilder.vertex(matrix, 0, 0, 1).color(r, g, b, la).endVertex();
-        bufferBuilder.vertex(matrix, 0, 0.5f, 1).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0.5f, 1).color(r, g, b, a).endVertex();
+        bufferBuilder.vertex(matrix, 0, 0.5f, 1).color(r_t, g_t, b_t, a).endVertex();
+        bufferBuilder.vertex(matrix, 1, 0.5f, 1).color(r_t, g_t, b_t, a).endVertex();
         bufferBuilder.vertex(matrix, 1, 0, 1).color(r, g, b, la).endVertex();
 
         // LEFT FACE (X = 0)
 
         bufferBuilder.vertex(matrix, 0, 0, 0).color(r, g, b, la).endVertex();
         bufferBuilder.vertex(matrix, 0, 0, 1).color(r, g, b, la).endVertex();
-        bufferBuilder.vertex(matrix, 0, 0.5f, 1).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, 0, 0.5f, 0).color(r, g, b, a).endVertex();
+        bufferBuilder.vertex(matrix, 0, 0.5f, 1).color(r_t, g_t, b_t, a).endVertex();
+        bufferBuilder.vertex(matrix, 0, 0.5f, 0).color(r_t, g_t, b_t, a).endVertex();
 
         // RIGHT FACE (X = 1)
 
         bufferBuilder.vertex(matrix, 1, 0, 0).color(r, g, b, la).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0.5f, 0).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0.5f, 1f).color(r, g, b, a).endVertex();
+        bufferBuilder.vertex(matrix, 1, 0.5f, 0).color(r_t, g_t, b_t, a).endVertex();
+        bufferBuilder.vertex(matrix, 1, 0.5f, 1f).color(r_t, g_t, b_t, a).endVertex();
         bufferBuilder.vertex(matrix, 1, 0, 1f).color(r, g, b, la).endVertex();
 
         BufferUploader.drawWithShader(bufferBuilder.end());
