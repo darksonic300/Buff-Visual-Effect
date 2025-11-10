@@ -52,6 +52,7 @@ public class VisualEffectCuboidRenderer {
 
         // --- THE ANIMATION LOOP ---
         for (EffectBuff.ActiveEffectVisual visual : EffectBuff.activeVisuals) {
+            boolean beneficial = visual.effect().isBeneficial();
             long elapsedTime = currentTime - visual.startTime();
             // Calculate animation progress (0.0 to 1.0)
             float progress = (float) elapsedTime / ANIMATION_DURATION_MS;
@@ -67,12 +68,12 @@ public class VisualEffectCuboidRenderer {
             float g = ((color >> 8) & 0xFF) / 255.0F;
             float b = (color & 0xFF) / 255.0F;
 
-            float a = 0.6F;
+            float a = 0.8F;
 
             // Calculate animated properties
             float baseSize = 1.15F; // Start with a smaller base size
             float height = 1.15F; // Fixed height
-            float yOffset = progress * 1.7F; // Rises from chest level
+            float yOffset = progress * 1.7F;
 
             // Push the matrix state to isolate transformations for this specific visual
             poseStack.pushPose();
@@ -83,7 +84,10 @@ public class VisualEffectCuboidRenderer {
 
             // Apply camera offset transformation
             double x = visualX - camera.getPosition().x;
-            double y = player.getY() - camera.getPosition().y + yOffset;
+
+            double y = player.getY() - camera.getPosition().y;
+            y = beneficial ? y + yOffset : y + 1.7 - yOffset;
+
             double z = visualZ - camera.getPosition().z;
 
             poseStack.translate(x, y, z);
@@ -92,7 +96,7 @@ public class VisualEffectCuboidRenderer {
             poseStack.scale(baseSize, height, baseSize);
 
             // 3. Call the rendering method
-            renderSimpleCube(poseStack, r, g, b, a);
+            renderSimpleCube(poseStack, r, g, b, a, beneficial);
 
             // Pop the matrix state to restore previous transformations
             poseStack.popPose();
@@ -112,14 +116,14 @@ public class VisualEffectCuboidRenderer {
      * @param b Blue component (0.0 to 1.0).
      * @param a Alpha component (0.0 to 1.0).
      */
-    private static void renderSimpleCube(PoseStack poseStack, float r, float g, float b, float a) {
+    private static void renderSimpleCube(PoseStack poseStack, float r, float g, float b, float a, boolean beneficial) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         Matrix4f matrix = poseStack.last().pose();
         
-        float la = a - 0.4f;
+        float la = a - 0.5f;
 
         // Calculate LIGHTER color for the top of the frustum (new!)
         // We increase the base color values towards 1.0 (white) for a glow effect
@@ -127,6 +131,24 @@ public class VisualEffectCuboidRenderer {
         float r_t = Math.min(1.0F, r + LIGHTEN_FACTOR);
         float g_t = Math.min(1.0F, g + LIGHTEN_FACTOR);
         float b_t = Math.min(1.0F, b + LIGHTEN_FACTOR);
+
+        if(!beneficial){
+            var temp = a;
+            a = la;
+            la = temp;
+
+            temp = r;
+            r = r_t;
+            r_t = temp;
+
+            temp = g;
+            g = g_t;
+            g_t = temp;
+
+            temp = b;
+            b = b_t;
+            b_t = temp;
+        }
 
         // FRONT FACE (Z = 0)
         
