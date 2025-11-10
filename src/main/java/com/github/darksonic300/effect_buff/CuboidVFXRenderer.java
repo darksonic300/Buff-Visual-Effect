@@ -73,7 +73,7 @@ public class CuboidVFXRenderer {
             float a = 0.8F;
 
             // Calculate animated properties
-            float baseSize = 1.15F;
+            float baseSize = 1.3F;
             //float height = 1.15F;
             float yOffset = progress * 1.7F;
 
