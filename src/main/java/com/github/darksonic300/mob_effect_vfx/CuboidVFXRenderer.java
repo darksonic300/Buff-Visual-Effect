@@ -1,4 +1,4 @@
-package com.github.darksonic300.effect_buff;
+package com.github.darksonic300.mob_effect_vfx;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -11,7 +11,7 @@ import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = EffectsVFX.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = net.minecraftforge.api.distmarker.Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = MobEffectsVFX.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = net.minecraftforge.api.distmarker.Dist.CLIENT)
 public class CuboidVFXRenderer {
 
     private static final long ANIMATION_DURATION_MS = 350L;
@@ -53,7 +53,7 @@ public class CuboidVFXRenderer {
      * Handles animation logic for the vfx, the model definition is found in CuboidModel.java
      */
     private static void animationLoop(long currentTime, PoseStack poseStack, Player player, Camera camera) {
-        for (EffectsVFX.ActiveEffectVisual visual : EffectsVFX.activeVisuals) {
+        for (MobEffectsVFX.ActiveEffectVisual visual : MobEffectsVFX.activeVisuals) {
             boolean beneficial = visual.effect().isBeneficial();
             long elapsedTime = currentTime - visual.startTime();
             // Calculate animation progress (0.0 to 1.0)

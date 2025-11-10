@@ -1,4 +1,4 @@
-package com.github.darksonic300.effect_buff;
+package com.github.darksonic300.mob_effect_vfx;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.Util;
@@ -24,16 +24,16 @@ import java.util.List;
 import java.util.Map;
 
 
-@Mod(EffectsVFX.MODID)
+@Mod(MobEffectsVFX.MODID)
 @OnlyIn(Dist.CLIENT)
-public class EffectsVFX {
+public class MobEffectsVFX {
 
     // Define mod id in a common place for everything to reference
-    public static final String MODID = "effects_vfx";
+    public static final String MODID = "mob_effects_vfx";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public EffectsVFX() {
+    public MobEffectsVFX() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         // Register ourselves for server and other game events we are interested in
@@ -48,7 +48,7 @@ public class EffectsVFX {
 
     public record ActiveEffectVisual(MobEffect effect, long startTime) {}
 
-    @Mod.EventBusSubscriber(modid = EffectsVFX.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = MobEffectsVFX.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
     public static class ModEventClientBusEvents {
         @SubscribeEvent
         public static void registerRenderers(TickEvent.ClientTickEvent event) {

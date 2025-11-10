@@ -1,4 +1,4 @@
-package com.github.darksonic300.effect_buff;
+package com.github.darksonic300.mob_effect_vfx;
 
 import com.mojang.blaze3d.vertex.*;
 import org.joml.Matrix4f;
