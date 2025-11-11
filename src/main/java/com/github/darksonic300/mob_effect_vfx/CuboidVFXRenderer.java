@@ -6,6 +6,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -54,7 +55,7 @@ public class CuboidVFXRenderer {
      */
     private static void animationLoop(long currentTime, PoseStack poseStack, Player player, Camera camera) {
         for (MobEffectsVFX.ActiveEffectVisual visual : MobEffectsVFX.activeVisuals) {
-            boolean beneficial = visual.effect().isBeneficial();
+            MobEffectCategory effectCategory = visual.effect().getCategory();
             long elapsedTime = currentTime - visual.startTime();
             // Calculate animation progress (0.0 to 1.0)
             float progress = (float) elapsedTime / ANIMATION_DURATION_MS;
@@ -74,7 +75,6 @@ public class CuboidVFXRenderer {
 
             // Calculate animated properties
             float baseSize = 1.3F;
-            //float height = 1.15F;
             float yOffset = progress * 1.7F;
 
             // Push the matrix state to isolate transformations for this specific visual
@@ -87,14 +87,15 @@ public class CuboidVFXRenderer {
             double x = visualX - camera.getPosition().x;
 
             double y = player.getY() - camera.getPosition().y;
-            y = beneficial ? y + yOffset : y + 1.7 - yOffset;
+
+            y = effectCategory != MobEffectCategory.HARMFUL ? y + yOffset : y + 1.7 - yOffset;
 
             double z = visualZ - camera.getPosition().z;
 
             poseStack.translate(x, y, z);
             poseStack.scale(baseSize, baseSize, baseSize);
 
-            CuboidModel.render(poseStack, r, g, b, a, beneficial);
+            CuboidModel.render(poseStack, r, g, b, a, effectCategory);
 
             poseStack.popPose();
         }
