@@ -9,6 +9,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
@@ -18,7 +19,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = MobEffectsVFX.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = net.minecraftforge.api.distmarker.Dist.CLIENT)
 public class CuboidVFXRenderer {
 
-    private static final long ANIMATION_DURATION_MS = 350L;
+    private static final long ANIMATION_DURATION_MS = 500L;
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
@@ -90,6 +91,7 @@ public class CuboidVFXRenderer {
 
     private static void risingEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, MobEffectCategory effectCategory, float r, float g, float b) {
         float a = 0.8F;
+        a = (float) Mth.clamp(0, a - (progress - 0.3) , 1);
 
         // Calculate animated properties
         float baseSize = 1.3F;
@@ -115,6 +117,7 @@ public class CuboidVFXRenderer {
 
     private static void stationaryEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, float r, float g, float b) {
         float a = 0.8F;
+        a = (float) Mth.clamp(0, a - (progress - 0.3) , 1);
 
         // Calculate animated properties
         float baseSize = 1.3F;
@@ -135,7 +138,8 @@ public class CuboidVFXRenderer {
     }
 
     private static void flatEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, MobEffectCategory effectCategory, float r, float g, float b) {
-        float a = 0.8F;
+        float a = 0.8f;
+        a = (float) Mth.clamp(0, a - (progress - 0.2) , 1);
 
         // Calculate animated properties
         float scaleOffset = progress * 1.5F;
@@ -150,9 +154,16 @@ public class CuboidVFXRenderer {
         double z = visualZ - camera.getPosition().z;
 
         poseStack.translate(x, y, z);
-        poseStack.scale(baseSize, 0f, baseSize);
+        poseStack.scale(baseSize, 0, baseSize);
 
         FlatCuboidModel.render(poseStack, r, g, b, a, effectCategory);
+    }
+
+    private static float thresholdAlpha(float alpha, double progress){
+        if(progress < 0.4f){
+            return alpha;
+        }
+        return alpha - 0.1f;
     }
 
 }

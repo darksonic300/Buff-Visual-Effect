@@ -2,6 +2,7 @@ package com.github.darksonic300.mob_effect_vfx.models;
 
 import com.github.darksonic300.mob_effect_vfx.MEVColor;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectCategory;
 import org.joml.Matrix4f;
 
@@ -25,6 +26,7 @@ public class RisingCuboidModel implements CuboidModel  {
         Matrix4f matrix = poseStack.last().pose();
 
         float la = a - 0.8f;
+        la = Mth.clamp(0, la, 1.0f);
         
         float r_t = Math.min(1.0F, r + LIGHTEN_FACTOR);
         float g_t = Math.min(1.0F, g + LIGHTEN_FACTOR);

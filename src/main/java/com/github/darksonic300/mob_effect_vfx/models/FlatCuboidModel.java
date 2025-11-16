@@ -30,8 +30,8 @@ public class FlatCuboidModel implements CuboidModel {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        float la = a - 0.8f;
-        la = Mth.clamp(0, la, 1.0f);
+        float la = a - 0.7f;
+        la = Mth.clamp(0, la, 1);
 
         float r_t = Math.min(1.0F, r + LIGHTEN_FACTOR);
         float g_t = Math.min(1.0F, g + LIGHTEN_FACTOR);
