@@ -13,9 +13,9 @@ public class MEVConfig {
             builder.push("Rendering");
             effect_type = builder
                     .comment("Select the type of effect you want to display.",
-                            "Permitted values: vertical, stationary, round.")
+                            "Permitted values: rising, stationary")
                     .translation("config." + MobEffectsVFX.MODID + ".effect_type")
-                    .define("Effect Type", "stationary");
+                    .define("Effect Type", "rising");
             builder.pop();
         }
     }

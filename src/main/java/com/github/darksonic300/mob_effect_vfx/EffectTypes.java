@@ -1,9 +1,9 @@
 package com.github.darksonic300.mob_effect_vfx;
 
 public enum EffectTypes {
-    VERTICAL("vertical"),
+    RISING("rising"),
     STATIONARY("stationary"),
-    ROUND("round"),
+    FLAT("flat"),
     EMPTY("");
 
     private String id;

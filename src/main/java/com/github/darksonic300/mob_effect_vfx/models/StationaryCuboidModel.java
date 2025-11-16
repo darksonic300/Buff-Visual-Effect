@@ -1,10 +1,11 @@
-package com.github.darksonic300.mob_effect_vfx;
+package com.github.darksonic300.mob_effect_vfx.models;
 
+import com.github.darksonic300.mob_effect_vfx.MEVColor;
 import com.mojang.blaze3d.vertex.*;
-import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 
-public class CuboidModel {
+public class StationaryCuboidModel implements CuboidModel {
 
     private static final float LIGHTEN_FACTOR = 0.3F;
 
@@ -16,7 +17,7 @@ public class CuboidModel {
      * @param b Blue component (0.0 to 1.0).
      * @param a Alpha component (0.0 to 1.0).
      */
-    public static void render(PoseStack poseStack, float r, float g, float b, float a, MobEffectCategory category) {
+    public static void render(PoseStack poseStack, float r, float g, float b, float a) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -24,20 +25,31 @@ public class CuboidModel {
         Matrix4f matrix = poseStack.last().pose();
 
         float la = a - 0.8f;
-        
+        la = Mth.clamp(0, la, 1.0f);
+
         float r_t = Math.min(1.0F, r + LIGHTEN_FACTOR);
         float g_t = Math.min(1.0F, g + LIGHTEN_FACTOR);
         float b_t = Math.min(1.0F, b + LIGHTEN_FACTOR);
 
-        if(category != MobEffectCategory.HARMFUL){
-            bufferBuilder = engageRender(r, g, b, a, bufferBuilder, matrix, la, r_t, g_t, b_t);
-        }else {
-            bufferBuilder = engageRender(r_t, g_t, b_t, la, bufferBuilder, matrix, a, r, g, b);
-        }
+        MEVColor opaque = new MEVColor(r, g, b, a);
+        MEVColor transparency = new MEVColor(r_t, g_t, b_t, la);
+
+        bufferBuilder = engageRender(transparency, opaque, bufferBuilder, matrix);
         BufferUploader.drawWithShader(bufferBuilder.end());
     }
 
-    private static BufferBuilder engageRender(float r, float g, float b, float a, BufferBuilder bufferBuilder, Matrix4f matrix, float la, float r_t, float g_t, float b_t) {
+    private static BufferBuilder engageRender(MEVColor opaque, MEVColor transparency, BufferBuilder bufferBuilder, Matrix4f matrix) {
+        float r = opaque.r();
+        float g = opaque.g();
+        float b = opaque.b();
+        float a = opaque.a();
+
+        float r_t = transparency.r();
+        float g_t = transparency.g();
+        float b_t = transparency.b();
+        float la = transparency.a();
+
+
         // FRONT FACE (Z = 0)
 
         bufferBuilder.vertex(matrix, 0, 0, 0).color(r, g, b, la).endVertex();

@@ -1,19 +1,19 @@
 package com.github.darksonic300.mob_effect_vfx;
 
+import com.github.darksonic300.mob_effect_vfx.models.FlatCuboidModel;
+import com.github.darksonic300.mob_effect_vfx.models.RisingCuboidModel;
+import com.github.darksonic300.mob_effect_vfx.models.StationaryCuboidModel;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 @Mod.EventBusSubscriber(modid = MobEffectsVFX.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = net.minecraftforge.api.distmarker.Dist.CLIENT)
 public class CuboidVFXRenderer {
@@ -79,21 +79,21 @@ public class CuboidVFXRenderer {
 
             // Push the matrix state to isolate transformations for this specific visual
             poseStack.pushPose();
-            switch("stationary") {
-                case "round" -> roundEffectRendering(poseStack, player, camera, progress, effectCategory, r, g, b);
+            switch(MEVConfig.CLIENT.effect_type.get()) {
+                case "flat" -> flatEffectRendering(poseStack, player, camera, progress, effectCategory, r, g, b);
                 case "stationary" -> stationaryEffectRendering(poseStack, player, camera, progress, r, g, b);
-                default -> verticalEffectRendering(poseStack, player, camera, progress, effectCategory, r, g, b);
+                default -> risingEffectRendering(poseStack, player, camera, progress, effectCategory, r, g, b);
             }
             poseStack.popPose();
         }
     }
 
-    private static void verticalEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, MobEffectCategory effectCategory, float r, float g, float b) {
+    private static void risingEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, MobEffectCategory effectCategory, float r, float g, float b) {
         float a = 0.8F;
 
         // Calculate animated properties
         float baseSize = 1.3F;
-        float yOffset = progress * 1.7F;
+        float yOffset = progress * 1.6F;
 
         double visualX = player.getX() - (baseSize / 2.0); // Center the cuboid on the player
         double visualZ = player.getZ() - (baseSize / 2.0);
@@ -110,13 +110,10 @@ public class CuboidVFXRenderer {
         poseStack.translate(x, y, z);
         poseStack.scale(baseSize, baseSize, baseSize);
 
-        CuboidModel.render(poseStack, r, g, b, a, effectCategory);
+        RisingCuboidModel.render(poseStack, r, g, b, a, effectCategory);
     }
 
     private static void stationaryEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, float r, float g, float b) {
-//        float a = progress < 0.8 ? 0.8F :  0.8F - (2/progress - 1.8f);
-//        a = Mth.clamp(0, a, 1.0f);
-
         float a = 0.8F;
 
         // Calculate animated properties
@@ -132,35 +129,30 @@ public class CuboidVFXRenderer {
         double z = visualZ - camera.getPosition().z;
 
         poseStack.translate(x, y, z);
-        //poseStack.mulPose(player.getDirection().getRotation());
         poseStack.scale(baseSize, height, baseSize);
 
         StationaryCuboidModel.render(poseStack, r, g, b, a);
     }
 
-    private static void roundEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, MobEffectCategory effectCategory, float r, float g, float b) {
+    private static void flatEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, MobEffectCategory effectCategory, float r, float g, float b) {
         float a = 0.8F;
 
         // Calculate animated properties
         float baseSize = 1.3F;
-        float yOffset = progress * 1.7F;
+        float scaleOffset = progress * 1.5F;
 
         double visualX = player.getX() - (baseSize / 2.0); // Center the cuboid on the player
         double visualZ = player.getZ() - (baseSize / 2.0);
 
         // Apply camera offset transformation
         double x = visualX - camera.getPosition().x;
-
         double y = player.getY() - camera.getPosition().y;
-
-        y = effectCategory != MobEffectCategory.HARMFUL ? y + yOffset : y + 1.7 - yOffset;
-
         double z = visualZ - camera.getPosition().z;
 
-        poseStack.translate(x, y, z);
-        poseStack.scale(baseSize, baseSize, baseSize);
+        poseStack.translate(x - 0.5, y, z - 0.5);
+        poseStack.scale(baseSize * scaleOffset, 0f, baseSize * scaleOffset);
 
-        CuboidModel.render(poseStack, r, g, b, a, effectCategory);
+        FlatCuboidModel.render(poseStack, r, g, b, a, effectCategory);
     }
 
 }
