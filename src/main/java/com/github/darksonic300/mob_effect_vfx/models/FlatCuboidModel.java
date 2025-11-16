@@ -26,7 +26,7 @@ public class FlatCuboidModel implements CuboidModel {
     public static void render(PoseStack poseStack, float r, float g, float b, float a, MobEffectCategory category) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
 
         Matrix4f matrix = poseStack.last().pose();
 
@@ -40,7 +40,11 @@ public class FlatCuboidModel implements CuboidModel {
         MEVColor opaque = new MEVColor(r, g, b, a);
         MEVColor transparency = new MEVColor(r_t, g_t, b_t, la);
 
-        bufferBuilder = engageRender(transparency, opaque, bufferBuilder, matrix);
+        if(category != MobEffectCategory.HARMFUL){
+            bufferBuilder = engageRender(opaque, transparency, bufferBuilder, matrix);
+        }else {
+            bufferBuilder = engageRender(transparency, opaque, bufferBuilder, matrix);
+        }
         BufferUploader.drawWithShader(bufferBuilder.end());
     }
 
@@ -57,25 +61,21 @@ public class FlatCuboidModel implements CuboidModel {
 
         // TOP FACE (Y = 0)
 
-        bufferBuilder.vertex(matrix, 0, 0, 0).color(r_t, g_t, b_t, la).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0, 0).color(r_t, g_t, b_t, la).endVertex();
-        bufferBuilder.vertex(matrix, 0, 0, 1).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0, 1).color(r, g, b, a).endVertex();
+        bufferBuilder.vertex(matrix, 0.5f, 0, 0.5f).color(r, g, b, la).endVertex();
+        bufferBuilder.vertex(matrix, 0, 0, 1).color(r_t, g_t, b_t, a).endVertex();
+        bufferBuilder.vertex(matrix, 0, 0, 0).color(r_t, g_t, b_t, a).endVertex();
 
-        bufferBuilder.vertex(matrix, 0, 0, 0).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0, 0).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, 0, 0, 1).color(r_t, g_t, b_t, la).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0, 1).color(r_t, g_t, b_t, la).endVertex();
+        bufferBuilder.vertex(matrix, 0.5f, 0, 0.5f).color(r, g, b, la).endVertex();
+        bufferBuilder.vertex(matrix, 1, 0, 0).color(r_t, g_t, b_t, a).endVertex();
+        bufferBuilder.vertex(matrix, 0, 0, 0).color(r_t, g_t, b_t, a).endVertex();
 
-        bufferBuilder.vertex(matrix, 0, 0, 0).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0, 0).color(r_t, g_t, b_t, la).endVertex();
-        bufferBuilder.vertex(matrix, 0, 0, 1).color(r_t, g_t, b_t, la).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0, 1).color(r, g, b, a).endVertex();
+        bufferBuilder.vertex(matrix, 0.5f, 0, 0.5f).color(r, g, b, la).endVertex();
+        bufferBuilder.vertex(matrix, 1, 0, 0).color(r_t, g_t, b_t, a).endVertex();
+        bufferBuilder.vertex(matrix, 1, 0, 1).color(r_t, g_t, b_t, a).endVertex();
 
-        bufferBuilder.vertex(matrix, 0, 0, 0).color(r_t, g_t, b_t, la).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0, 0).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, 0, 0, 1).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0, 1).color(r_t, g_t, b_t, la).endVertex();
+        bufferBuilder.vertex(matrix, 0.5f, 0, 0.5f).color(r, g, b, la).endVertex();
+        bufferBuilder.vertex(matrix, 0, 0, 1).color(r_t, g_t, b_t, a).endVertex();
+        bufferBuilder.vertex(matrix, 1, 0, 1).color(r_t, g_t, b_t, a).endVertex();
 
         return bufferBuilder;
     }

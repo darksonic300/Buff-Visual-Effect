@@ -13,7 +13,7 @@ public class MEVConfig {
             builder.push("Rendering");
             effect_type = builder
                     .comment("Select the type of effect you want to display.",
-                            "Permitted values: rising, stationary")
+                            "Permitted values: rising, stationary, flat")
                     .translation("config." + MobEffectsVFX.MODID + ".effect_type")
                     .define("Effect Type", "rising");
             builder.pop();

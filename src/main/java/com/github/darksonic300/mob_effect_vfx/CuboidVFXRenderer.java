@@ -138,19 +138,19 @@ public class CuboidVFXRenderer {
         float a = 0.8F;
 
         // Calculate animated properties
-        float baseSize = 1.3F;
         float scaleOffset = progress * 1.5F;
+        float baseSize = effectCategory == MobEffectCategory.HARMFUL ? (1.3F * 1.5F) - scaleOffset : 1.3F * scaleOffset;
 
         double visualX = player.getX() - (baseSize / 2.0); // Center the cuboid on the player
         double visualZ = player.getZ() - (baseSize / 2.0);
 
         // Apply camera offset transformation
         double x = visualX - camera.getPosition().x;
-        double y = player.getY() - camera.getPosition().y;
+        double y = player.getY() - camera.getPosition().y + 0.01D;
         double z = visualZ - camera.getPosition().z;
 
-        poseStack.translate(x - 0.5, y, z - 0.5);
-        poseStack.scale(baseSize * scaleOffset, 0f, baseSize * scaleOffset);
+        poseStack.translate(x, y, z);
+        poseStack.scale(baseSize, 0f, baseSize);
 
         FlatCuboidModel.render(poseStack, r, g, b, a, effectCategory);
     }
