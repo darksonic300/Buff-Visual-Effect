@@ -90,8 +90,7 @@ public class CuboidVFXRenderer {
     }
 
     private static void risingEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, MobEffectCategory effectCategory, float r, float g, float b) {
-        float a = 0.8F;
-        a = (float) Mth.clamp(0, a - (progress - 0.3) , 1);
+        float a = calculateAlpha(0.8f, 0.05f, progress);
 
         // Calculate animated properties
         float baseSize = 1.3F;
@@ -116,8 +115,7 @@ public class CuboidVFXRenderer {
     }
 
     private static void stationaryEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, float r, float g, float b) {
-        float a = 0.8F;
-        a = (float) Mth.clamp(0, a - (progress - 0.3) , 1);
+        float a = calculateAlpha(1, 0.1f, progress);
 
         // Calculate animated properties
         float baseSize = 1.3F;
@@ -138,8 +136,7 @@ public class CuboidVFXRenderer {
     }
 
     private static void flatEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, MobEffectCategory effectCategory, float r, float g, float b) {
-        float a = 0.8f;
-        a = (float) Mth.clamp(0, a - (progress - 0.2) , 1);
+        float a = calculateAlpha(0.8f, 0.25f, progress);
 
         // Calculate animated properties
         float scaleOffset = progress * 1.5F;
@@ -159,11 +156,8 @@ public class CuboidVFXRenderer {
         FlatCuboidModel.render(poseStack, r, g, b, a, effectCategory);
     }
 
-    private static float thresholdAlpha(float alpha, double progress){
-        if(progress < 0.4f){
-            return alpha;
-        }
-        return alpha - 0.1f;
+    private static float calculateAlpha(float alpha, float freq, double progress){
+        return (float) Mth.clamp(0, alpha - (progress - freq) , 1);
     }
 
 }
