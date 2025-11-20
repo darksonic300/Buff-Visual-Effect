@@ -7,10 +7,18 @@ public class MEVConfig {
 
     public static class Client {
 
+        public final ForgeConfigSpec.IntValue duration;
         public final ForgeConfigSpec.DoubleValue opacity;
         public final ForgeConfigSpec.ConfigValue<EffectTypes> effect_type;
 
         public Client(ForgeConfigSpec.Builder builder) {
+            builder.push("Rendering");
+            duration = builder
+                    .comment("The duration in MS for the effects.")
+                    .translation("config." + MobEffectsVFX.MODID + ".opacity")
+                    .defineInRange("Duration", 1000, 500, 2000);
+            builder.pop();
+
             builder.push("Rendering");
             opacity = builder
                     .comment("The base opacity for the effects.")

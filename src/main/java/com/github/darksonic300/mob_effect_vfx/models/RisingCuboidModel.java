@@ -1,7 +1,10 @@
 package com.github.darksonic300.mob_effect_vfx.models;
 
 import com.github.darksonic300.mob_effect_vfx.MEVColor;
+import com.github.darksonic300.mob_effect_vfx.MobEffectsVFX;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectCategory;
 import org.joml.Matrix4f;
@@ -19,6 +22,8 @@ public class RisingCuboidModel implements CuboidModel  {
      * @param a Alpha component (0.0 to 1.0).
      */
     public static void render(PoseStack poseStack, float r, float g, float b, float a, MobEffectCategory category) {
+        RenderSystem.setShaderTexture(0, ResourceLocation.fromNamespaceAndPath(MobEffectsVFX.MODID, "textures/effect/grayscale_rising_single.png"));
+
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -53,6 +58,7 @@ public class RisingCuboidModel implements CuboidModel  {
         float g_t = transparency.g();
         float b_t = transparency.b();
         float la = transparency.a();
+
         // FRONT FACE (Z = 0)
 
         bufferBuilder.vertex(matrix, 0, 0, 0).color(r, g, b, la).endVertex();
@@ -60,25 +66,26 @@ public class RisingCuboidModel implements CuboidModel  {
         bufferBuilder.vertex(matrix, 1, 0.7f, 0).color(r_t, g_t, b_t, a).endVertex();
         bufferBuilder.vertex(matrix, 0, 0.7f, 0).color(r_t, g_t, b_t, a).endVertex();
 
+
         // BACK FACE (Z = 1)
 
         bufferBuilder.vertex(matrix, 0, 0, 1).color(r, g, b, la).endVertex();
         bufferBuilder.vertex(matrix, 0, 0.7f, 1).color(r_t, g_t, b_t, a).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0.7f, 1).color(r_t, g_t, b_t, a).endVertex();
+        bufferBuilder.vertex(matrix, 1, 0.7f, 1).color(r_t, g_t, b_t, a).uv(1.0F, 1.0F).endVertex();
         bufferBuilder.vertex(matrix, 1, 0, 1).color(r, g, b, la).endVertex();
 
         // LEFT FACE (X = 0)
 
         bufferBuilder.vertex(matrix, 0, 0, 0).color(r, g, b, la).endVertex();
         bufferBuilder.vertex(matrix, 0, 0, 1).color(r, g, b, la).endVertex();
-        bufferBuilder.vertex(matrix, 0, 0.7f, 1).color(r_t, g_t, b_t, a).endVertex();
+        bufferBuilder.vertex(matrix, 0, 0.7f, 1).color(r_t, g_t, b_t, a).uv(1.0F, 1.0F).endVertex();
         bufferBuilder.vertex(matrix, 0, 0.7f, 0).color(r_t, g_t, b_t, a).endVertex();
 
         // RIGHT FACE (X = 1)
 
         bufferBuilder.vertex(matrix, 1, 0, 0).color(r, g, b, la).endVertex();
         bufferBuilder.vertex(matrix, 1, 0.7f, 0).color(r_t, g_t, b_t, a).endVertex();
-        bufferBuilder.vertex(matrix, 1, 0.7f, 1f).color(r_t, g_t, b_t, a).endVertex();
+        bufferBuilder.vertex(matrix, 1, 0.7f, 1f).color(r_t, g_t, b_t, a).uv(1.0F, 1.0F).endVertex();
         bufferBuilder.vertex(matrix, 1, 0, 1f).color(r, g, b, la).endVertex();
 
         return bufferBuilder;

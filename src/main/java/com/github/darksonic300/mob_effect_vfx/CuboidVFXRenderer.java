@@ -9,6 +9,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.player.Player;
@@ -19,10 +20,12 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = MobEffectsVFX.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = net.minecraftforge.api.distmarker.Dist.CLIENT)
 public class CuboidVFXRenderer {
 
-    private static final long ANIMATION_DURATION_MS = 500L;
+    private static long ANIMATION_DURATION_MS = 1000L;
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
+        ANIMATION_DURATION_MS = MEVConfig.CLIENT.duration.get();
+
         // Ensure we are in the correct rendering stage
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             return;
@@ -92,6 +95,7 @@ public class CuboidVFXRenderer {
     }
 
     private static void risingEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, MobEffectCategory effectCategory, MEVColor color) {
+
         float a = calculateAlpha(color.a(), progress);
 
         // Calculate animated properties
