@@ -7,12 +7,13 @@ A Client-side Minecraft mod that adds simple 3D VFX on effect application!
 
 ## Links and Socials
 
-[![Modloader: Forge](https://img.shields.io/badge/Mod%20Loader-forge-CC974D?style=flat-square)](https://files.minecraftforge.net/net/minecraftforge/forge/)
-[![Modloader: NeoForge](https://img.shields.io/badge/Mod%20Loader-neoforge-CC974D?style=flat-square)](https://neoforged.net/)
-[![CurseForge Downloads](http://cf.way2muchnoise.eu/1382352.svg)](https://www.curseforge.com/minecraft/mc-mods/mobeffectsvfx)
-[![CurseForge Version](http://cf.way2muchnoise.eu/versions/1382352_latest.svg)](https://www.curseforge.com/minecraft/mc-mods/mobeffectsvfx)  
+[![Modloader: Forge](https://img.shields.io/badge/Mod%20Loader-forge-CC974D?style=for-the-badge)](https://files.minecraftforge.net/net/minecraftforge/forge/)
+[![Modloader: NeoForge](https://img.shields.io/badge/Mod%20Loader-neoforge-CC974D?style=for-the-badge)](https://neoforged.net/)  
 
-[![Discord](https://img.shields.io/discord/118816101936267265.svg?label=Discord&logoColor=FFFFFF&logo=discord&color=7289DA&style=flat-square)](https://discord.gg/AsDEG7smfn)  
+[![CurseForge Downloads](http://cf.way2muchnoise.eu/1382352.svg?badge_style=for_the_badge)](https://www.curseforge.com/minecraft/mc-mods/mobeffectsvfx)
+[![CurseForge Version](http://cf.way2muchnoise.eu/versions/1382352.svg?badge_style=for_the_badge)](https://www.curseforge.com/minecraft/mc-mods/mobeffectsvfx)  
+
+[![Discord](https://img.shields.io/discord/1045640095853707345?style=for-the-badge&label=Discord)](https://discord.gg/xB6gaUv66t)  
 
 *Note: Modrinth coming soon.*
 
