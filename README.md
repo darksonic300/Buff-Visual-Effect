@@ -28,19 +28,7 @@ In Fantasy-RPG fashion, the player will be surrounded by a fast moving aura when
 The mod currently supports 3 VFX options: **Rising**, **Stationary** and **Flat**.
 Other independant configurability options include: **VFX Opacity** and **Duration**.
 
-*Note: the mod it's still in early stage, so there might be bugs and issues related to it.*
-
-### Implemented Effects Types
-
-- Rising
-- Stationary
-- Flat
-
-### Configurable Options
-
-- Effect Type
-- VFX Opacity
-- VFX Duration
+*Note: the mod it's still in early stage, so there might be bugs and issues related to it.*  
 
 ### Versioning
 
