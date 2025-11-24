@@ -22,6 +22,26 @@ A Client-side Minecraft mod that adds simple 3D VFX on effect application!
 
 ## Project Info
 
+### Description
+
+**MobEffectsVFX** is a client-side mod that adds new visuals when a player gains an effect.
+
+In Fantasy-RPG fashion, the player will be surrounded by a fast moving aura when an effect is applied to them. Depending on the nature and color of the applied effect, the aura will change its behaviour (ex. A beneficial effect will have an upward moving animation, while a harmful one will move downwards).
+
+*Note: the mod it's still in early stage, so there might be bugs and issues related to it.*
+
+### Implemented Effects Types
+
+- Rising
+- Stationary
+- Flat
+
+### Configurable Options
+
+- Effect Type
+- VFX Opacity
+- VFX Duration
+
 ### Versioning
 
 ✅ - Currently Available <br>
