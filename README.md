@@ -30,6 +30,12 @@ Other independant configurability options include: **VFX Opacity** and **Duratio
 
 *Note: the mod it's still in early stage, so there might be bugs and issues related to it.*  
 
+### Visual Effects Showcase
+
+| Rising | Stationary | Flat |
+| :---: | :---: | :---: |
+| <img src=".github/visual_stationary.gif" width="350" /> | <img src=".github/visual_rising.gif" width="350" /> | <img src=".github/visual_flat.gif" width="350" /> |
+
 ### Versioning
 
 ✅ - Currently Available <br>
