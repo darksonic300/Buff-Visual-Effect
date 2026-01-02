@@ -14,6 +14,22 @@ import org.joml.Matrix4f;
 public class StationaryCuboidRenderer extends CuboidRenderer {
 
     @Override
+    public void render(PoseStack poseStack, VertexConsumer buffer, MEVColor color, MobEffectCategory category) {
+        Matrix4f matrix = poseStack.last().pose();
+
+        float la = color.a() - 0.8f;
+        la = Mth.clamp(0, la, 1.0f);
+
+        float r_t = Math.min(1.0F, color.r() + LIGHTEN_FACTOR);
+        float g_t = Math.min(1.0F, color.g() + LIGHTEN_FACTOR);
+        float b_t = Math.min(1.0F, color.b() + LIGHTEN_FACTOR);
+
+        MEVColor transparency = new MEVColor(r_t, g_t, b_t, la);
+
+        drawCuboid(buffer, transparency, color, matrix);
+    }
+
+    @Override
     public void startRendering(MultiBufferSource.BufferSource bufferSource, RenderLevelStageEvent event, PoseStack poseStack, Player player, Vec3 camera, float progress, MobEffectCategory effectCategory, MEVColor color) {
         float a = calculateAlpha(color.a(), progress);
         color = new MEVColor(color.r(), color.g(), color.b(), a);

@@ -8,7 +8,7 @@ import net.minecraft.world.effect.MobEffectCategory;
 import org.joml.Matrix4f;
 
 public abstract class CuboidRenderer implements IEffectRenderer {
-    private static final float LIGHTEN_FACTOR = 0.3F;
+    protected static final float LIGHTEN_FACTOR = 0.3F;
 
     /**
      * Renders a cuboid with the given color. Scale and other factors are defined in the animation logic.
