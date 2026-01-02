@@ -49,7 +49,7 @@ public class StationaryCuboidRenderer extends CuboidRenderer {
         poseStack.translate(x, y, z);
         poseStack.scale(baseSize, height, baseSize);
 
-        this.render(poseStack, bufferSource.getBuffer(MEVRenderTypes.VFX), color, effectCategory);
+        this.render(poseStack, bufferSource.getBuffer(MEVRenderTypes.STATIONARY), color, effectCategory);
     }
 
     @Override

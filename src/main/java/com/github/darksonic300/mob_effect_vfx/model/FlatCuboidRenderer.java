@@ -35,7 +35,7 @@ public class FlatCuboidRenderer extends CuboidRenderer {
         poseStack.translate(x, y, z);
         poseStack.scale(baseSize, 0, baseSize);
 
-        this.render(poseStack, bufferSource.getBuffer(MEVRenderTypes.VFX), color, effectCategory);
+        this.render(poseStack, bufferSource.getBuffer(MEVRenderTypes.FLAT), color, effectCategory);
     }
 
     @Override
@@ -59,6 +59,7 @@ public class FlatCuboidRenderer extends CuboidRenderer {
         addVertex(buffer, matrix, 0.5f, 0, 0.5f, r, g, b, la);
         addVertex(buffer, matrix, 1, 0, 0, r_t, g_t, b_t, a);
         addVertex(buffer, matrix, 0, 0, 0, r_t, g_t, b_t, a);
+
 
         addVertex(buffer, matrix, 0.5f, 0, 0.5f, r, g, b, la);
         addVertex(buffer, matrix, 1, 0, 0, r_t, g_t, b_t, a);

@@ -37,7 +37,7 @@ public class RisingCuboidRenderer extends CuboidRenderer {
         poseStack.translate(x, y, z);
         poseStack.scale(baseSize, baseSize, baseSize);
 
-        this.render(poseStack, bufferSource.getBuffer(MEVRenderTypes.VFX), color, effectCategory);
+        this.render(poseStack, bufferSource.getBuffer(MEVRenderTypes.RISING), color, effectCategory);
     }
 
     @Override
