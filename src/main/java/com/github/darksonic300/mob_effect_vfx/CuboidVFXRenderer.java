@@ -1,26 +1,29 @@
 package com.github.darksonic300.mob_effect_vfx;
 
-import com.github.darksonic300.mob_effect_vfx.models.FlatCuboidModel;
-import com.github.darksonic300.mob_effect_vfx.models.RisingCuboidModel;
-import com.github.darksonic300.mob_effect_vfx.models.StationaryCuboidModel;
+import com.github.darksonic300.mob_effect_vfx.model.FlatCuboidModel;
+import com.github.darksonic300.mob_effect_vfx.model.RisingCuboidModel;
+import com.github.darksonic300.mob_effect_vfx.model.StationaryCuboidModel;
+import com.github.darksonic300.mob_effect_vfx.particle.MEVParticles;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = MobEffectsVFX.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = net.minecraftforge.api.distmarker.Dist.CLIENT)
+import java.util.Random;
+
+@Mod.EventBusSubscriber(modid = MobEffectsVFX.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class CuboidVFXRenderer {
 
-    private static long ANIMATION_DURATION_MS = 1000L;
+    private static long ANIMATION_DURATION_MS;
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
@@ -41,7 +44,7 @@ public class CuboidVFXRenderer {
         Camera camera = event.getCamera();
         long currentTime = Util.getMillis();
 
-        // RENDER SETUP: Prepare for drawing custom geometry
+        // Prepare for drawing custom geometry
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         // Enable blending for transparency
         RenderSystem.enableBlend();
@@ -88,7 +91,10 @@ public class CuboidVFXRenderer {
             switch(MEVConfig.CLIENT.effect_type.get()) {
                 case FLAT -> flatEffectRendering(poseStack, player, camera, progress, effectCategory, new MEVColor(r,g,b,a));
                 case STATIONARY -> stationaryEffectRendering(poseStack, player, camera, progress, new MEVColor(r,g,b,a));
-                default -> risingEffectRendering(poseStack, player, camera, progress, effectCategory, new MEVColor(r,g,b,a));
+                //case GLOW -> glowEffectRendering(poseStack, player, camera, progress, new MEVColor(r,g,b,a));
+                default -> {
+                    risingEffectRendering(poseStack, player, camera, progress, effectCategory, new MEVColor(r,g,b,a));
+                }
             }
             poseStack.popPose();
         }
@@ -163,8 +169,26 @@ public class CuboidVFXRenderer {
         FlatCuboidModel.render(poseStack, color.r(), color.g(), color.b(), a, effectCategory);
     }
 
+//    private static void glowEffectRendering(PoseStack poseStack, Player player, Camera camera, float progress, MEVColor color) {
+//        float a = calculateAlpha(color.a(), progress);
+//
+//        // Calculate animated properties
+//        float baseSize = 1.3F;
+//        float height = (float) ((baseSize - 0.2) * (progress) + 0.5);
+//
+//        double visualX = player.getX() - (baseSize / 2.0); // Center the cuboid on the player
+//        double visualZ = player.getZ() - (baseSize / 2.0);
+//
+//        // Apply camera offset transformation
+//        double x = visualX - camera.getPosition().x;
+//        double y = player.getY() - camera.getPosition().y;
+//        double z = visualZ - camera.getPosition().z;
+//
+//        poseStack.translate(x, y, z);
+//        poseStack.scale(baseSize, height, baseSize);
+//    }
+
     private static float calculateAlpha(float alpha, double progress){
         return (float) Mth.clamp(0, alpha * Math.exp(-2.5 * progress) , 1);
     }
-
 }

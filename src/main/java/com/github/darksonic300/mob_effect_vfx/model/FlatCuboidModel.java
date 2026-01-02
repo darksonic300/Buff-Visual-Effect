@@ -1,4 +1,4 @@
-package com.github.darksonic300.mob_effect_vfx.models;
+package com.github.darksonic300.mob_effect_vfx.model;
 
 import com.github.darksonic300.mob_effect_vfx.MEVColor;
 import com.mojang.blaze3d.vertex.BufferBuilder;

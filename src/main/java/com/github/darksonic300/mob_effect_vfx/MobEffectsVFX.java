@@ -1,5 +1,9 @@
 package com.github.darksonic300.mob_effect_vfx;
 
+import com.github.darksonic300.mob_effect_vfx.particle.LoweringParticles;
+import com.github.darksonic300.mob_effect_vfx.particle.MEVParticles;
+import com.github.darksonic300.mob_effect_vfx.particle.RisingParticles;
+import com.github.darksonic300.mob_effect_vfx.particle.VisualParticles;
 import com.mojang.logging.LogUtils;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -10,6 +14,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -24,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 @Mod(MobEffectsVFX.MODID)
@@ -38,12 +44,15 @@ public class MobEffectsVFX {
     public MobEffectsVFX() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        MEVParticles.register(modEventBus);
+
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT,
                 MEVConfig.CLIENT_SPEC);
     }
+
 
     // Map to track effects that were active on the previous tick for NEW effect detection.
     private static final Map<MobEffect, Integer> activeEffectsTracker = new HashMap<>();
@@ -54,7 +63,7 @@ public class MobEffectsVFX {
     public record ActiveEffectVisual(MobEffect effect, long startTime) {}
 
     @Mod.EventBusSubscriber(modid = MobEffectsVFX.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-    public static class ModEventClientBusEvents {
+    public static class ForgeClientBusEvents {
         @SubscribeEvent
         public static void registerRenderers(TickEvent.ClientTickEvent event) {
             // Only run at the end of the client tick
@@ -73,7 +82,6 @@ public class MobEffectsVFX {
             }
             LocalPlayer player = mc.player;
 
-            // Use a new map to store the current tick's effects and durations
             Map<MobEffect, Integer> currentEffects = new HashMap<>();
 
             // 1. Check for newly applied or REAPPLIED effects
@@ -90,7 +98,15 @@ public class MobEffectsVFX {
                 // Use a small buffer (e.g., 2 ticks) to account for client-side timing.
                 else if (currentDuration > (activeEffectsTracker.get(effect) + 2)) {
                     triggerEffectVisual(effect);
+
+                    int color = effect.getColor();
+                    float r = ((color >> 16) & 0xFF) / 255.0F;
+                    float g = ((color >> 8) & 0xFF) / 255.0F;
+                    float b = (color & 0xFF) / 255.0F;
+
                     mc.level.playLocalSound(player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1, 1, true);
+
+                    spawnParticles(effect, player, r, g, b);
                 }
 
                 // Add the current effect and its duration to the map for the next tick's comparison
@@ -103,6 +119,31 @@ public class MobEffectsVFX {
         }
     }
 
+    private static void spawnParticles(MobEffect effect, LocalPlayer player, float r, float g, float b) {
+        if (!MEVConfig.CLIENT.effect_type.get().equals(EffectTypes.RISING)) return;
+
+        var particle = effect.isBeneficial() ? MEVParticles.RISING_PARTICLES.get() : MEVParticles.LOWERING_PARTICLES.get();
+        var random = new Random();
+        for (int i = 0; i < 3; i++) {
+            player.level().addParticle(
+                    particle,
+                    player.getX() + randomRange(random, -0.8f, 0f),
+                    player.getY() + 1 + randomRange(random, 0f, 0.6f),
+                    player.getZ() + randomRange(random, 0f, 0.8f),
+                    r, g, b
+            );
+        }
+        for (int i = 0; i < 3; i++) {
+            player.level().addParticle(
+                    particle,
+                    player.getX() + randomRange(random, 0f, 0.8f),
+                    player.getY() + 1 + randomRange(random, -0.6f, 0f),
+                    player.getZ() + randomRange(random, -0.8f, 0f),
+                    r, g, b
+            );
+        }
+    }
+
     private static void triggerEffectVisual(MobEffect effect) {
         ActiveEffectVisual existing = activeVisuals.stream()
                 .filter(visual -> visual.effect().equals(effect))
@@ -110,12 +151,28 @@ public class MobEffectsVFX {
                 .orElse(null);
 
         if (existing != null) {
-            // 2. If found, refresh its start time to restart the animation
-            activeVisuals.remove(existing); // Remove the old instance
-            activeVisuals.add(new ActiveEffectVisual(effect, Util.getMillis())); // Add a new one with current time
+            activeVisuals.remove(existing);
+            activeVisuals.add(new ActiveEffectVisual(effect, Util.getMillis()));
         } else {
             // 3. If not found, add a new one
             activeVisuals.add(new ActiveEffectVisual(effect, Util.getMillis()));
         }
+    }
+
+    @Mod.EventBusSubscriber(modid = MobEffectsVFX.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ModClientBusEvents {
+        @SubscribeEvent
+        public static void registerParticleFactories(final RegisterParticleProvidersEvent event) {
+            Minecraft.getInstance().particleEngine.register(MEVParticles.RISING_PARTICLES.get(),
+                    RisingParticles.Provider::new);
+
+            Minecraft.getInstance().particleEngine.register(MEVParticles.LOWERING_PARTICLES.get(),
+                    LoweringParticles.Provider::new);
+        }
+    }
+
+
+    private static float randomRange(Random random, float min, float max) {
+        return min + (max - min) * random.nextFloat();
     }
 }
