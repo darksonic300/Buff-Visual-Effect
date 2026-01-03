@@ -10,13 +10,14 @@ public class MEVConfig {
 
         public final ForgeConfigSpec.IntValue duration;
         public final ForgeConfigSpec.DoubleValue opacity;
+        public final ForgeConfigSpec.IntValue refresh_cooldown;
         public final ForgeConfigSpec.ConfigValue<EffectTypes> effect_type;
 
         public Client(ForgeConfigSpec.Builder builder) {
             builder.push("Rendering");
             duration = builder
                     .comment("The duration in MS for the effects.")
-                    .translation("config." + MobEffectsVFX.MODID + ".opacity")
+                    .translation("config." + MobEffectsVFX.MODID + ".duration")
                     .defineInRange("Duration", 1000, 500, 2000);
             builder.pop();
 
@@ -32,6 +33,11 @@ public class MEVConfig {
                     .comment("Select the type of effect you want to display.")
                     .translation("config." + MobEffectsVFX.MODID + ".effect_type")
                     .defineEnum("Effect Type", EffectTypes.RISING);
+            builder.pop();
+            refresh_cooldown = builder
+                    .comment("Select the type of effect you want to display.")
+                    .translation("config." + MobEffectsVFX.MODID + ".refresh_cooldown")
+                    .defineInRange("Duration", 150, 0, 5000);
             builder.pop();
         }
     }

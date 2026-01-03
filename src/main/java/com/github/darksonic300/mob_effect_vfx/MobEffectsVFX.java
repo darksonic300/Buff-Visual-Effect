@@ -86,21 +86,13 @@ public class MobEffectsVFX {
                 int currentDuration = instance.getDuration();
 
                 if (!activeEffectsTracker.containsKey(effect)) {
-                    triggerEffectVisual(effect);
+                    triggerEffectVFX(effect);
+                    triggerSoundAndParticles(mc, player, effect);
                 }
-
                 // Check if the effect IS present, but the new duration is greater than the old one
-                else if (currentDuration > (activeEffectsTracker.get(effect) + 2)) {
-                    triggerEffectVisual(effect);
-
-                    int color = effect.getColor();
-                    float r = ((color >> 16) & 0xFF) / 255.0F;
-                    float g = ((color >> 8) & 0xFF) / 255.0F;
-                    float b = (color & 0xFF) / 255.0F;
-
-                    mc.level.playLocalSound(player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1, 1, true);
-
-                    spawnParticles(effect, player, r, g, b);
+                else if (currentDuration > (activeEffectsTracker.get(effect) + MEVConfig.CLIENT.refresh_cooldown.get())) {
+                    triggerEffectVFX(effect);
+                    triggerSoundAndParticles(mc, player, effect);
                 }
 
                 // Add the current effect and its duration to the map for the next tick's comparison
@@ -112,7 +104,12 @@ public class MobEffectsVFX {
         }
     }
 
-    private static void spawnParticles(MobEffect effect, LocalPlayer player, float r, float g, float b) {
+    private static void triggerSoundAndParticles(Minecraft mc, LocalPlayer player, MobEffect effect) {
+        mc.level.playLocalSound(player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1, 1, true);
+        spawnParticles(effect, player, getEffectColor(effect));
+    }
+
+    private static void spawnParticles(MobEffect effect, LocalPlayer player, MEVColor color) {
         if (!MEVConfig.CLIENT.effect_type.get().equals(EffectTypes.RISING)) return;
 
         var particle = effect.isBeneficial() ? MEVParticles.RISING_PARTICLES.get() : MEVParticles.LOWERING_PARTICLES.get();
@@ -123,7 +120,7 @@ public class MobEffectsVFX {
                     player.getX() + randomRange(random, -0.8f, 0f),
                     player.getY() + 1 + randomRange(random, 0f, 0.6f),
                     player.getZ() + randomRange(random, 0f, 0.8f),
-                    r, g, b
+                    color.r(), color.g(), color.b()
             );
         }
         for (int i = 0; i < 3; i++) {
@@ -132,12 +129,12 @@ public class MobEffectsVFX {
                     player.getX() + randomRange(random, 0f, 0.8f),
                     player.getY() + 1 + randomRange(random, -0.6f, 0f),
                     player.getZ() + randomRange(random, -0.8f, 0f),
-                    r, g, b
+                    color.r(), color.g(), color.b()
             );
         }
     }
 
-    private static void triggerEffectVisual(MobEffect effect) {
+    private static void triggerEffectVFX(MobEffect effect) {
         ActiveEffectVisual existing = activeVisuals.stream()
                 .filter(visual -> visual.effect().equals(effect))
                 .findFirst()
