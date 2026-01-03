@@ -36,10 +36,7 @@ import java.util.Random;
 @Mod(MobEffectsVFX.MODID)
 @OnlyIn(Dist.CLIENT)
 public class MobEffectsVFX {
-
-    // Define mod id in a common place for everything to reference
     public static final String MODID = "mob_effects_vfx";
-    // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public MobEffectsVFX() {
